@@ -1,5 +1,65 @@
 # Code Squad - WEEK 02
 
+## 어려웠던 부분
+
+### 메뉴 펼치고 접는 애니메이션 주기
+
+```html
+<div class="side-menu__main">
+  <div class="side-menu__item side-menu__show-button">
+    <span>모두 보기</span>
+    <img src="./asset/dropDown.svg" alt="dropDown" />
+  </div>
+  <div class="side-menu__all-items">
+    <ul>
+      <li>
+        <span>자동차 용품</span>
+        <img src="../asset/extendArrow.svg" alt="extendArrow" />
+      </li>
+      <li>
+        <span>유아</span>
+        <img src="../asset/extendArrow.svg" alt="extendArrow" />
+      </li>
+      <li>
+        <span>뷰티 및 퍼스널 케어</span>
+        <img src="../asset/extendArrow.svg" alt="extendArrow" />
+      </li>
+      <li class="side-menu__item side-menu__hide-button">
+        <span>간단히 보기</span>
+        <img src="./asset/dropDownClose.svg" alt="dropDownClose" />
+      </li>
+    </ul>
+  </div>
+</div>
+```
+
+### 시도한 방법
+
+처음에는 `height` 값을 0에서 100%로 transition을 주면 자연스럽게 펼쳐지는 것을 의도했다. 실제로 이 방법으로 해결한 다른 그룹원들도 있었다. 내 코드에는 애니메이션이 적용되지 않아서 다른 그룹원들과 구조도 맞추고 해봤지만 적용되지 않았다.  
+검색해보니 heigth 값을 0에서 100% 또는 auto로 변화하는 방법을 주면 100%나 auto는 값이 명확하지 않아서 변화를 감지할 수 없다고 한다. 그래서 정확한 값을 명시해서 단위와 함께 줘야 한다. (ex. `heigth: 500px`) 하지만 이렇게 명시적인 높이 값을 주면 반응적으로 변화해야 하는 UI에는 적합하지 않은 경우가 보통이라고 한다. 그래서 다른 방법을 사용해보고 싶어서 아래 방법(`transform: scaleY()`)으로 해결하였다.
+
+### 해결
+
+```css
+.side-menu__all-items {
+  overflow: hidden;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.2s ease-out;
+}
+```
+
+```jsx
+const allItems = document.querySelector(".side-menu__all-items");
+const allItemsButton = document.querySelector(".side-menu__show-button");
+
+const oepnAllItems = () => {
+  allItemsButton.addEventListener("click", () => {
+    allItems.style.transform = "scaleY(1)";
+  });
+};
+```
+
 ## ✏️ 학습 내용
 
 ## DOM, EVENT 제어
