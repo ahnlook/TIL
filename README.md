@@ -5,10 +5,10 @@
 ### Code Squad
 
 - [ ] 아마존
-  - [ ] defer vs async
+  - [x] defer vs async
   - [ ] transition height issue
   - [ ] svg color change
-  - [ ] move to scrollY 0 when close all itmes of side bar
+  - [ ] move to `scrollY: 0` when close all itmes of side bar
 
 ## 📖 읽고 있는 책
 
