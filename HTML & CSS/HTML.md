@@ -1,5 +1,39 @@
 # HTML
 
+### 브라우저 렌더링과 리플로우, 리페인트
+
+## 브라우저 렌더링 동작 과정
+
+1. `Parsing` : HTML 파일과 CSS 파일을 파싱해서 `DOM(document object model) tree`, `CSSOM(css object model)`을 만든다.
+2. `Style` : 두 tree를 결합하여 `Rendering tree`를 만든다.
+3. `Layout` : Rendering tree에서 각 노드의 위치와 크기를 계산한다.
+4. `Paint` : 계산된 값을 이용해 각 노드를 화면상의 실제 픽셀로 변환하고, 레이어를 만든다.
+5. `Composite` : 레이어를 합성하여 실제 화면에 나타낸다.
+
+### Parsing
+
+![image](https://user-images.githubusercontent.com/88878874/226832933-8f2a3bc4-421d-4734-9dec-a8a4d608fb40.png)
+
+### Style
+
+Render tree를 구성할 때 `visibility: hidden`은 요소 공간을 차지하고, 보이지만 않기 때문에 render tree에 포함이 되지만, `display: none`의 경우 render tree에서 제외된다.
+
+![image](https://user-images.githubusercontent.com/88878874/226833343-1cdb4b4d-4124-4a7a-94ee-1f24cfdc3370.png)
+
+### Layout
+
+Layout 단계에서는 render tree를 화면에 어떻게 배치해야 할 것인지 노드의 정확한 위치와 크기를 계산한다.
+
+루트부터 노드를 순회하면서 노드의 정확한 크기와 위치를 계산하고 render tree에 반영한다. 만약 크기 값을 %로 지정하였다면, Layout 단계에서 % 값을 계산해서 픽셀 단위로 변환한다.
+
+### Paint
+
+Paint 단계에서는 Layout 단계에서 계산된 값을 이용해 render tree의 각 노드를 화면상의 실제 픽셀로 변환한다. 이 때 픽셀로 변환된 결과는 하나의 레이어가 아니라 여러 개의 레어이로 관리된다. 스타일이 복잡할수록 paint 시간도 늘어난다.
+
+### Composite
+
+Paint 단계에서 생성된 레이어를 합성하여 실제 화면에 나타낸다. 우리가 화면에서 웹 페이지로 볼 수 있다.
+
 ### `defer` vs `async`
 
 모던 웹브라우저에서 돌아가는 스크립트들은 대부분 HTML보다 무겁다. 용량이 커서 다운로드 받는데 오랜 시간이 걸리고 처리하는 것 또한 마찬가지이다.
