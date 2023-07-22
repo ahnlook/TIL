@@ -69,16 +69,16 @@ foo()
 ### 20.5.2 변수, 함수, 매개변수의 삭제
 
 ```jsx
-(functi on () {
+(function () {
 	'use strict';
 
 	var x = 1;
-	delete x; // SyntaxError: Delete of an unqualifi ed identifi er in strict mode.
+	delete x; // SyntaxError: Delete of an unqualified identifier in strict mode.
 
 	function foo(a) {
-		delete a; // SyntaxError: Delete of an unqualifi ed identifi er in strict mode.
-		delete foo; // SyntaxError: Delete of an unqualifi ed identifi er in strict mode.
-}());
+		delete a; // SyntaxError: Delete of an unqualified identifier in strict mode.
+		delete foo; // SyntaxError: Delete of an unqualified identifier in strict mode.
+}()});
 ```
 
 ### 20.5.3 매개변수 이름의 중복
