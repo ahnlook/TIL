@@ -503,3 +503,245 @@ console.log(Object.getOwnPropertyDescriptor(Person.prototype, 'fullName')
 ## 25.8 상속에 의한 클래스 확장
 
 ### 25.8.1 클래스 상속과 생성자 함수 상속
+
+- 상속에 의한 클래스 확장은 지금까지 살펴본 프로토타입 기반 상속과는 다른 개념이다.
+  - 프로토타입 기반 상속은 프로토타입 체인을 통해 다른 객체의 자산을 상속 받는 개념이다.
+  - 상속에 의한 클래스 확장은 기존 클래스를 상속받아 새로운 클래스를 확장하여 정의하는 것이다.
+  ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/298453b7-9237-4833-ac4c-faef11d7df64/Untitled.png)
+
+```jsx
+class Animal {
+	constructor(age, weight) {
+		this.age = age
+		this.weight = weight
+	}
+
+	eat() { return 'eat' }
+	move() { return 'move' }
+}
+
+class Bird extends Animal {
+	fly() { return 'fly }
+}
+
+const bird = new Bird(1, 5)
+
+console.log(bird)  // Bird { age: 1, weight: 5 }
+console.log(bird instanceof Bird)    // true
+console.log(bird instanceof Animal)  // true
+console.log(bird.move())  // move
+```
+
+### 25.8.2 extends 키워드
+
+- 상속을 통해 클래스를 확장하려면 `extends` 키워드를 사용하여 상속을 받을 클래스를 정의한다.
+- 상속을 통해 확장된 클래스를 서브클래스라 부른다. (파생 클래스, 자식 클래스)
+- 서브클래스에세 상속된 클래스를 수퍼클래스라 부른다. (베이스 클래스, 부모 클래스)
+- 수퍼클래스와 서브클래스는 인스턴스의 프로토타입 체인뿐 아니라 클래스 간의 프로토타입 체인도 생성한다.
+  - 프로토타입 메서드, 정적 메서드 모두 상속이 가능하다.
+
+### 25.8.3 동적 상속
+
+- `extends` 키워드는 클래스뿐만 아니라 생성자 함수를 상속받아 클래스를 확장할 수도 있다.
+  ```jsx
+  function Base(a) {
+    this.a = a
+  }
+
+  class Derived extends Base {}
+
+  const derived = new Derived(1)
+  console.log(derived) // Derived { a: 1 }
+  ```
+  - 단 `extends` 키워드 앞에는 반드시 클래스가 와야한다.
+- `extends` 키워드 다음에는 클래스뿐만 아니라 `[[Constructor]]` 내부 메서드를 갖는 함수 객체로 평가될 수 있는 모든 표현식을 사용할 수 있다.
+  ```jsx
+  function Base2 () {}
+
+  class Base2 () {}
+
+  let condition = true
+
+  class Derived extends (condition ? Base1 : Base2) {}
+  ```
+
+### 25.8.4 서브클래스의 constructor
+
+- 서브클래스에서 `constructor`를 생략하면 클래스에 다음과 같은 `constructor`가 암묵적으로 정의된다.
+  ```jsx
+  constructor(...args) { super(...args) }
+  ```
+  - `super()`는 수퍼클래스의 `constructor(super-constructor)`를 호출하여 인스턴스를 생성한다.
+
+### 25.8.5 super 키워드
+
+- 함수처럼 호출할 수도 있고 `this`와 같이 식별자처럼 참조할 수 있는 특수한 키워드다.
+- `super`를 호출하면 수퍼클래스의 `constructor(super-constructor)`를 호출한다.
+- `super`를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.
+
+**super 호출**
+
+- 수퍼클래스의 constructor 내부에서 추가한 프로퍼티를 그대로 갖는 인스턴스를 생성한다면 서브 클래스의 constructor를 생략할 수 있다.
+  ```jsx
+  class Base {
+    constructor(a, b) {
+      this.a = a
+      this.b = b
+    }
+  }
+
+  class Derived extends Base {
+    // 암묵적 정의
+    // constructor(...args) { supoer(...args) }
+  }
+  ```
+- 수퍼클래스에서 추가한 프로퍼티와 서브클래스에서 추가한 프로퍼티를 갖는 인스턴스를 생성한다면 서브클래스의 constructor를 생략할 수 없다.
+  ```jsx
+  class Base {
+    constructor(a, b) {
+      this.a = a
+      this.b = b
+    }
+  }
+
+  class Derived extends Base {
+    constructor(a, b, c) {
+      super(a, b)
+      this.c = c
+    }
+  }
+  ```
+  - 서브클래스에서 constructor를 생략하지 않는 경우 서브클래스의 constructor에서는 반드시 `super`를 호출해야 한다.
+- 서브클래스의 constructor에서 `super`를 호출하기 전에는 `this`를 참조할 수 없다.
+- `super`는 반드시 서브클래스의 constructor에서만 호출한다.
+
+**super 참조**
+
+- 메서드 내에서 `super`를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.
+  ```jsx
+  class Base {
+    constructor(name) {
+      this.name = name
+    }
+
+    sayHi() {
+      return `hi! ${this.name}`
+    }
+  }
+
+  class Derived extends Base {
+    sayHi() {
+      return `${super.sayHi()}. how are you doing?`
+    }
+  }
+  ```
+  - `super` 참조를 통해 수퍼클래스의 메서드를 참조하려면 `super`가 수퍼클래스의 메서드가 바인딩된 객체, 즉 수퍼클래스의 prototype 프로퍼티에 바인딩된 프로토타입을 참조할 수 있어야한다.
+- 서브클래스의 정적 메서드 내에서 `super.sayHi`는 수퍼클래스의 정적 메서드 `sayHi`를 가리킨다.
+  ```jsx
+  class Base {
+    static sayHi() {
+      return 'hi!'
+    }
+  }
+
+  class Derived extends Base {
+    static sayHi() {
+      return `${super.sayHi()}. how are you doing?`
+    }
+  }
+
+  console.log(Derived.sayHi()) // hi! how are you doing?
+  ```
+
+### 25.8.6 상속 클래스의 인스턴스 생성 과정
+
+```jsx
+class Rectangle {
+  constructore(width, height) {
+    this.width = width
+    this.height = height
+  }
+
+  getArea() {
+    return this.width * this.height
+  }
+
+  toString() {
+    return `width = ${this.width}, height = ${this.height}`
+  }
+}
+
+class ColorRectangle extends Rectangle {
+  constructor(width, hegiht, color) {
+    super(width, height)
+    this.color = color
+  }
+
+  // 메서드 오버라이딩
+  toString() {
+    return super.toString() + `, color = ${this.color}`
+  }
+}
+```
+
+### 1. 서브클래스의 super 호출
+
+- 자바스크립트 엔진은 클래스를 평가할 때 수퍼클래스와 서브클래스를 구분하기 위해 “base” 또는 “derived”를 값으로 갖는 내부 슬롯 [[ConstructorKind]]를 갖는다.
+  - 다른 클래스를 상속받지 않는 클래스는 내부 슬롯 [[ConstructorKind]]의 값이 “base”로 설정되고 다른 클래스를 상속받는 서브클래스는 내부 슬롯 [[ConstructorKind]]의 값이 “derived”로 설정된다.
+  - 이를 통해 new 연산자와 함께 호출되었을 때 동작이 구분된다.
+- 서브클래스는 자신이 직접 인스턴스를 생서하지 않고 수퍼클래스에게 인스턴스 생성을 위임한다.
+  - 수퍼클래스가 평가되어 생성된 함수 객체의 코드가 실행되기 시작한다.
+
+### 2. 수퍼클래스의 인스턴스 생성과 this 바인딩
+
+- 수퍼클래스의 constructor 내부의 this는 생성된 인스턴스를 가리킨다.
+  - 이 때 인스턴스는 수퍼클래스가 생성한 것이다.
+  - 하지만 new 연산자와 함께 호출된 클래스는 서브클래스라는 것이 중요하다.
+- new 연산자와 함께 호출된 함수를 가리키는 new.target은 서브클래스를 가리킨다.
+  - 인스턴스는 서브클래스가 생성한 것으로 처리된다.
+
+### 3. 수퍼클래스의 인스턴스 초기화
+
+- this에 바인딩되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티를 초기화한다.
+
+### 4. 서브클래스 constructor로의 복귀와 this 바인딩
+
+- `super` 호출이 종료되고 제어 흐름이 서브클래스 constructor로 돌아온다.
+  - `super`가 반환한 인스턴스가 `this`에 바인딩 된다.
+  - 서브클래스는 별도의 인스턴스를 생성하지 않고 `super`가 반환한 인스턴스를 `this`에 바인딩하여 그대로 사용한다.
+- `super`가 호출되지 않으면 인스턴스가 생성되지 않으며, `this` 바인딩도 할 수 없다.
+  - 서브클래스의 constructor에서 super를 호출하기 전에는 this를 참조할 수 없는 이유가 바로 이 때문이다.
+
+### 5. 서브클래스의 인스턴스 초기화
+
+- this에 바인딩되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티를 초기화한다.
+
+### 6. 인스턴스 반환
+
+- 클래스의 모든 처리가 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+
+### 25.8.7 표준 빌트인 생성자 함수 확장
+
+```jsx
+class MyArray extends Array {
+  uniq() {
+    return this.filter((v, i, self) => self.indexOf(v) === i)
+  }
+
+  average() {
+    return this.reduce((pre, cur) => pre + cur, 0) / this.length
+  }
+}
+
+const myArray = new MyArray(1, 1, 2, 3)
+
+console.log(myArray.uniq()) // MyArray(3) [1, 2, 3]
+console.log(myArray.average()) // 1.75
+```
+
+- Array 생성자 함수를 상속받아 확장한 MyArray 클래스가 생성한 인스턴스는 Array.prototype과 MyArray.prototype의 모든 메서드를 사용할 수 있다.
+- Array.prototype의 메서드 중에서 map, filter와 같이 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환한다.
+
+```jsx
+console.log(myArray.filter(v => v % 2) instanceof myArray) // true
+```

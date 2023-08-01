@@ -73,7 +73,7 @@ function emailForSubscriber(subscriber, goods, bests) {
   }
 }
 
-// calculate vs action
+// calculate
 // 보낼 이메일 목록을 준비하기
 function emailForSubscribers(subscribers, goods, bests) {
   const emails = []
